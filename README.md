@@ -24,7 +24,6 @@ js-standard-style
 
 ![GitHub](https://img.shields.io/github/license/da070116/vk_apps)
 
-![Scrutinizer code quality (GitHub/Bitbucket)](https://img.shields.io/scrutinizer/quality/g/da070116/vk_apps/master)
 
 ## Screenshots
 
