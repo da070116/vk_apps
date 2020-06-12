@@ -3,7 +3,12 @@ import vk
 import datetime
 
 
-def input_date_to_datetime(prompt: str) -> int:
+def input_date_to_timestamp(prompt: str) -> int:
+    """
+    Converts input value to a unix timestamp
+    :param prompt: String prompt for user to input date
+    :return:  unix timestamp
+    """
     sep = ''
     raw_date_input = input(prompt)
     if '.' in raw_date_input:
@@ -23,13 +28,13 @@ def input_date_to_datetime(prompt: str) -> int:
     return _timestamp
 
 
-def get_liked_posts(default_list):
+def get_liked_posts(raw_posts_list: list) -> list:
     active_list = []
     print("Определяем, за какой период производить отбор.")
-    from_ts = input_date_to_datetime("Введите начальную дату: ")
-    till_ts = input_date_to_datetime("Введите конечную дату: ")
-    # This allows to remove all unnecessary data from post list and bind it to a time interval
-    for post in default_list:
+    from_ts = input_date_to_timestamp("Введите начальную дату: ")
+    till_ts = input_date_to_timestamp("Введите конечную дату: ")
+    # This allows to remove all unnecessary data from post dictionary and bind it to a time interval
+    for post in raw_posts_list:
         if int(post['likes']['count']) > 0 and from_ts <= post['date'] <= till_ts:
             clear_record = {
                 'id': post['id'],
@@ -40,6 +45,7 @@ def get_liked_posts(default_list):
 
 
 class Selector:
+
     api = None
 
     group_digit = '-128629560'
@@ -56,6 +62,7 @@ class Selector:
         vk_api_token = "f5fb7becf5fb7becf5fb7bece4f589f7fcff5fbf5fb7becab1b8692e9887b40c93c8172"
         session = vk.Session(access_token=vk_api_token)
         self.api = vk.API(session)
+        print('Программа для определения призёра среди активных участников группы')
         self.members_count = self.count_members()
         self.create_dict_members()
         raw_list = self.walk_by_posts()
@@ -64,7 +71,7 @@ class Selector:
         print(f"Готово. Конечный список содержит {len(self.post_list)} записей.")
 
     # Quantity of all posts on the wall
-    def count_wall_posts(self):
+    def count_wall_posts(self) -> int:
         posts = self.api.wall.get(
             domain=self.domain,
             count=1,
@@ -84,11 +91,11 @@ class Selector:
 
     # Get all posts to a raw list
     def walk_by_posts(self) -> list:
-        list_post = []
+        raw_list_post = []
         posts_total = posts_left = self.count_wall_posts()
         offset = 0
         while posts_left > 100:
-            list_post += self.api.wall.get(
+            raw_list_post += self.api.wall.get(
                 domain=self.domain,
                 count=100,
                 offset=offset,
@@ -98,7 +105,7 @@ class Selector:
             offset += 101
             posts_left -= 100
             print(f"Получаем записи со стены группы... Осталось {posts_left} из {posts_total}")
-        return list_post
+        return raw_list_post
 
     # Returns a list of users who liked the post with 'post_id'
     def get_members_who_liked(self, post_id):
@@ -114,7 +121,7 @@ class Selector:
 
     # Picks all members of a certain group and puts them into a dictionary
     #           {member_id : {name: 'Ivan Ivanov', likes: 0, comments: 0} }
-    def create_dict_members(self):
+    def create_dict_members(self) -> dict:
         raw_list = []
         counter = self.members_count
         offset = 0
