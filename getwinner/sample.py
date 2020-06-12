@@ -194,3 +194,4 @@ if __name__ == '__main__':
     win_list = sel.members_list
     random.shuffle(win_list)
     print(f"Победитель - {win_list[win_id][0]} ({win_list[win_id][1]} лайков). Поздравляем! ")
+    input('Нажмите ENTER для завершения работы')
