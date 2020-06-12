@@ -1,4 +1,24 @@
+import random
+
 import vk
+import datetime
+
+
+def get_liked_posts(default_list):
+    active_list = []
+    day_from, mon_from, year_from = input('Date from: ').split('.')
+    day_till, mon_till, year_till = input('Date to: ').split('.')
+    date_from = datetime.datetime(int(year_from), int(mon_from), int(day_from))
+    from_ts = date_from.timestamp()
+    date_to = datetime.datetime(int(year_till), int(mon_till), int(day_till))
+    till_ts = date_to.timestamp()
+
+    for rec in default_list:
+        if int(rec['likes']['count']) + int(rec['comments']['count']) > 0 and from_ts <= rec['date'] <= till_ts:
+            required = {'id': rec['id'], 'likes': rec['likes']['count'], 'comments': rec['comments']['count']}
+            active_list.append(required)
+    print(f'{len(active_list)=}')
+    return active_list
 
 
 class Selector:
@@ -15,21 +35,15 @@ class Selector:
         vk_api_token = "f5fb7becf5fb7becf5fb7bece4f589f7fcff5fbf5fb7becab1b8692e9887b40c93c8172"
         session = vk.Session(access_token=vk_api_token)
         self.api = vk.API(session)
+
         self.members_count = self.count_members()
-        self.get_all_users()
-        self.post_list = self.walk_by_posts()
+        self.create_dict_members()
+        raw_list = self.walk_by_posts()
         # Remove posts with no likes and comments
-        self.post_list = self.filter_active_posts()
+        self.post_list = get_liked_posts(raw_list)
         print(f"Work complete. List of all posts contains {len(self.post_list)}")
 
-    def about(self):
-        about_str = self.api.groups.getById(
-            group_id=self.group_id,
-            fields="description",
-            v=5.21
-        )
-        return about_str[0]['name']
-
+    # Quantity of all posts on the wall
     def count_wall_posts(self):
         posts = self.api.wall.get(
             domain=self.domain,
@@ -38,16 +52,20 @@ class Selector:
         )
         return posts['count']
 
-    def count_members(self):
-        return self.api.groups.getMembers(
-            group_id=self.group_id[4:],
-            count=1,
-            v=5.107
-        )['count']
+    # Number of all members
+    def count_members(self) -> int:
+        return int(
+            self.api.groups.getMembers(
+                group_id=self.group_id[4:],
+                count=1,
+                v=5.107
+            )['count']
+        )
 
+    # Get all posts to a raw list
     def walk_by_posts(self):
         list_post = []
-        posts_left = self.count_wall_posts()
+        posts_total = posts_left = self.count_wall_posts()
         offset = 0
         while posts_left > 100:
             list_post += self.api.wall.get(
@@ -58,17 +76,10 @@ class Selector:
             )['items']
             offset += 101
             posts_left -= 100
-            print(f"Obtaining posts from VK... {posts_left} left")
+            print(f"Obtaining posts from VK... {posts_left} of {posts_total} left")
         return list_post
 
-    def filter_active_posts(self):
-        active_list = []
-        for rec in self.post_list:
-          #  if int(rec['likes']['count']) + int(rec['comments']['count']) > 0:
-            if int(rec['likes']['count']) > 0:    # считать только лайки
-                active_list.append(rec)
-        return active_list
-
+    # Returns a list of users who liked the post with 'post_id'
     def get_users_who_liked(self, post_id):
         users_list = self.api.likes.getList(
             type='post',
@@ -79,7 +90,9 @@ class Selector:
         )
         return users_list['items']
 
-    def get_all_users(self):
+    # Picks all members of a certain group and puts 'em into a dictionary
+    # {member_id : {name: 'Ivan Ivanov', likes: 0, comments: 0} }
+    def create_dict_members(self):
         raw_list = []
         counter = self.members_count
         print(f"Put all {counter} members into a dictionary")
@@ -102,25 +115,36 @@ class Selector:
                 fields='first_name, last_name',
                 v=5.107
             )['items']
-
+        # dictionary
         for user in raw_list:
-            self.members[user['id']] = {
-                'name': f"{user['first_name']} {user['last_name']}",
-                'likes': 0,
-                'comments': 0
-            }
-        return
+            if user['first_name'] != 'DELETED':
+                self.members[user['id']] = {
+                    'name': f"{user['first_name']} {user['last_name']}",
+                    'likes': 0,
+                    'comments': 0
+                }
+        print(f'{len(self.members)=}')
+        return self.members
 
+    # Adds value of likes to a dictionary
     def count_likes(self):
         for post in self.post_list:
-            liked_by = self.get_users_who_liked(post_id=post['id'])
-            print(f'{post["id"]=} {liked_by=}')
+            likers_list = self.get_users_who_liked(post_id=post['id'])
+            for liker in likers_list:
+                member = self.members.get(liker)
+                if member is not None:
+                    member['likes'] += 1
 
 
 if __name__ == '__main__':
     sel = Selector()
-    # print(sel.members)
-  #  sel.count_likes()
-
-    for x in sel.post_list:
-        print(x)
+    sel.count_likes()
+    likers = []
+    for x in sel.members:
+        mem = sel.members.get(x)
+        if mem['likes'] > 0:
+            print(f"{mem['name']} {mem['likes']}")
+            likers.append(mem['name'])
+    print(f"{len(likers)=}")
+    winner_id = random.randint(0, len(likers))
+    print(f"The winner is {likers[winner_id]}")
