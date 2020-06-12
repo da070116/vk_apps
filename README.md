@@ -21,7 +21,10 @@ Build Status Windows Build Status
 If you're using any code style like xo, standard etc. That will help others while contributing to your project.
 Ex. -
 js-standard-style
-[![](https://img.shields.io/badge/license-MIT-green](https://img.shields.io/badge/license-MIT-green)
+
+![GitHub](https://img.shields.io/github/license/da070116/vk_apps)
+
+![Scrutinizer code quality (GitHub/Bitbucket)](https://img.shields.io/scrutinizer/quality/g/da070116/vk_apps/master)
 
 ## Screenshots
 
