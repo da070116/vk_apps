@@ -168,30 +168,33 @@ class Selector:
 
 if __name__ == '__main__':
     sel = Selector()
-    print('Считаем число лайков в выбранных записях. Это может быть долго, смиритесь')
-    sel.count_likes()
-    dictionary = dict()
-    likes_min_value = input('Какое минимальное количество лайков должно быть у претендента? ')
-    try:
-        likes_min_value = int(likes_min_value)
-    except ValueError:
-        print('Не могу преобразовать в число. Ставлю значение по умолчанию - 1')
-        likes_min_value = 1
-    for x in sel.members:
-        member = sel.members.get(x)
-        if member['likes'] >= 1:
-            dictionary[member['name']] = member['likes']
-    print('Почти всё. Выстраиваем участников по порядку')
-    for i in sorted(dictionary.items(), key=lambda pair: pair[1], reverse=True):
-        sel.members_list.append(i)
-    applicants_amount = len(sel.members_list)
-    print(f'Претендентов на приз: {applicants_amount}')
-    print('Наиболее активные участники за выбранный период: ')
-    for i in sel.members_list[:10:]:
-        print(f'{i[0]} ==> {i[1]} лайков)')
-    print('Бросаем жребий')
-    win_id = random.randint(0, applicants_amount)
-    win_list = sel.members_list
-    random.shuffle(win_list)
-    print(f"Победитель - {win_list[win_id][0]} ({win_list[win_id][1]} лайков). Поздравляем! ")
+    if len(sel.post_list) == 0:
+        print('В заданном периоде нет записей')
+    else:
+        print('Считаем число лайков в выбранных записях. Это может быть долго, смиритесь')
+        sel.count_likes()
+        dictionary = dict()
+        likes_min_value = input('Какое минимальное количество лайков должно быть у претендента? ')
+        try:
+            likes_min_value = int(likes_min_value)
+        except ValueError:
+            print('Не могу преобразовать в число. Ставлю значение по умолчанию - 1')
+            likes_min_value = 1
+        for x in sel.members:
+            member = sel.members.get(x)
+            if member['likes'] >= likes_min_value:
+                dictionary[member['name']] = member['likes']
+        print('Почти всё. Выстраиваем участников по порядку')
+        for i in sorted(dictionary.items(), key=lambda pair: pair[1], reverse=True):
+            sel.members_list.append(i)
+        applicants_amount = len(sel.members_list)
+        print(f'Претендентов на приз: {applicants_amount}')
+        print('Наиболее активные участники за выбранный период: ')
+        for i in sel.members_list[:10:]:
+            print(f'{i[0]} ==> {i[1]} лайков)')
+        print('Бросаем жребий')
+        win_id = random.randint(0, applicants_amount)
+        win_list = sel.members_list
+        random.shuffle(win_list)
+        print(f"Победитель - {win_list[win_id][0]} ({win_list[win_id][1]} лайков). Поздравляем! ")
     input('Нажмите ENTER для завершения работы')
