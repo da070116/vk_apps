@@ -192,9 +192,10 @@ if __name__ == '__main__':
         print('Наиболее активные участники за выбранный период: ')
         for i in sel.members_list[:10:]:
             print(f'{i[0]} ==> {i[1]} лайков)')
-        print('Бросаем жребий')
+        print(f'Бросаем жребий: 1 из {applicants_amount}')
         win_id = random.randint(0, applicants_amount)
         win_list = sel.members_list
         random.shuffle(win_list)
         print(f"Победитель - {win_list[win_id][0]} ({win_list[win_id][1]} лайков). Поздравляем! ")
     input('Нажмите ENTER для завершения работы')
+    exit(0)

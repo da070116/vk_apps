@@ -5,25 +5,6 @@ active group members.
 
 As a side-effect option it allows to check the top-10 most active members in descendant order
 
-## Motivation
-
-A short description of the motivation behind the creation and maintenance of the project. 
-This should explain why the project exists.
-
-## Build status
-
-Build status of continuous integration i.e. travis, appveyor etc. Ex. -
-
-Build Status Windows Build Status
-
-## Code style
-
-If you're using any code style like xo, standard etc. That will help others while contributing to your project.
-Ex. -
-js-standard-style
-
-![GitHub](https://img.shields.io/github/license/da070116/vk_apps)
-
 
 ## Screenshots
 
@@ -31,11 +12,9 @@ Include logo/demo screenshot etc.
 
 ## Tech/framework used
 
-Ex. -
+VK API 
+PyQt5
 
-## Built with
-
-    Electron
 
 ## Features
 
@@ -53,12 +32,12 @@ Provide step by step series of examples and explanations about how to get a deve
 
 ## API Reference
 
+Project requires [VK API](https://vk.com/dev/methods).
+
 Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README.
 For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
 
-## Tests
 
-Describe and show how to run the tests with code examples.
 
 ## How to use?
 
@@ -79,4 +58,8 @@ Anything else that seems useful
 
 A short snippet describing the license (MIT, Apache etc)
 
-MIT © Yourname
+![GitHub](https://img.shields.io/github/license/da070116/vk_apps) 
+
+2020 © Alexander Dubrovin 
+
+[https://vk.com/dev/methods]: https://https://vk.com/dev/methods
