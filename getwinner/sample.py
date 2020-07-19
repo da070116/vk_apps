@@ -1,16 +1,20 @@
 import random
 import vk
-import datetime
+from datetime import datetime
 
 
-def input_date_to_timestamp(prompt: str) -> int:
+def input_date_to_timestamp(prompt: str, default: str) -> int:
     """
     Converts input value to a unix timestamp
+    :param default: String default value
     :param prompt: String prompt for user to input date
     :return:  unix timestamp
     """
     sep = ''
     raw_date_input = input(prompt)
+    if not raw_date_input:
+        raw_date_input = default
+    print(raw_date_input)
     if '.' in raw_date_input:
         sep = '.'
     elif '/' in raw_date_input:
@@ -23,7 +27,7 @@ def input_date_to_timestamp(prompt: str) -> int:
         print("Не могу распознать формат даты. Завершение работы с ошибкой")
         exit()
     _day, _month, _year = raw_date_input.split(sep)
-    _date = datetime.datetime(int(_year), int(_month), int(_day))
+    _date = datetime(int(_year), int(_month), int(_day))
     _timestamp = int(_date.timestamp())
     return _timestamp
 
@@ -31,8 +35,9 @@ def input_date_to_timestamp(prompt: str) -> int:
 def get_liked_posts(raw_posts_list: list) -> list:
     active_list = []
     print("Определяем, за какой период производить отбор.")
-    from_ts = input_date_to_timestamp("Введите начальную дату: ")
-    till_ts = input_date_to_timestamp("Введите конечную дату: ")
+    from_ts = input_date_to_timestamp("Введите начальную дату (05.10.2016): ", "05.10.2016")
+    end_default_time = datetime.strftime(datetime.now(), "%d.%m.%Y")
+    till_ts = input_date_to_timestamp(f"Введите конечную дату ({end_default_time}): ", end_default_time)
     # This allows to remove all unnecessary data from post dictionary and bind it to a time interval
     for post in raw_posts_list:
         if int(post['likes']['count']) > 0 and from_ts <= post['date'] <= till_ts:
@@ -171,7 +176,7 @@ if __name__ == '__main__':
     if len(sel.post_list) == 0:
         print('В заданном периоде нет записей')
     else:
-        print('Считаем число лайков в выбранных записях. Это может быть долго, смиритесь')
+        print('Считаем число лайков в выбранных записях. Это может быть долго...')
         sel.count_likes()
         dictionary = dict()
         likes_min_value = input('Какое минимальное количество лайков должно быть у претендента? ')
@@ -188,13 +193,13 @@ if __name__ == '__main__':
         for i in sorted(dictionary.items(), key=lambda pair: pair[1], reverse=True):
             sel.members_list.append(i)
         applicants_amount = len(sel.members_list)
-        print(f'Претендентов на приз: {applicants_amount}')
         print('Наиболее активные участники за выбранный период: ')
         for i in sel.members_list[:10:]:
             print(f'{i[0]} ==> {i[1]} лайков)')
-        print('Бросаем жребий')
+        print(f'Бросаем жребий: выбор 1 из {applicants_amount}')
         win_id = random.randint(0, applicants_amount)
         win_list = sel.members_list
         random.shuffle(win_list)
         print(f"Победитель - {win_list[win_id][0]} ({win_list[win_id][1]} лайков). Поздравляем! ")
     input('Нажмите ENTER для завершения работы')
+    exit(0)
