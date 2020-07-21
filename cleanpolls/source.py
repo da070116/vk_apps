@@ -62,5 +62,5 @@ class PollsCleaner:
 poll = PollsCleaner()
 poll.check_poll()
 
-# TODO https://vk.com/dev/implicit_flow_user
+# TODO rename variables
 # https://oauth.vk.com/authorize?client_id=7545029&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=wall&response_type=token&v=5.120&state=123456
