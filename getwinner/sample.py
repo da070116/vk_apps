@@ -1,4 +1,6 @@
 import random
+from time import sleep
+
 import vk
 import datetime
 
@@ -152,13 +154,14 @@ class Selector:
                     'name': f"{group_member['first_name']} {group_member['last_name']}",
                     'likes': 0
                 }
-        print(f'В группе зарегистрировано {counter} участников, из них {len(self.members)} активных')
+        print(f'В группе зарегистрировано {self.members_count} участников, из них {len(self.members)} активных')
         return self.members
 
     # Adds value of likes to a dictionary
     def count_likes(self):
         for post in self.post_list:
             ids_active_members = self.get_members_who_liked(post_id=post['id'])
+            sleep(0.5)
             for member_id in ids_active_members:
                 _member = self.members.get(member_id)
                 if _member is not None:
